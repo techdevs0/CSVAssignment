@@ -1,7 +1,10 @@
-####========Steps=======####  
+#### Steps
 
-RUn the following commands
-    => npm i
-    => npm start
+### Rnn this command to install all the dependencies
+    `npm install`
+    
+### Run this command to start the app
+    `npm start`
 
-Access the App on http://localhost:3000/
+### Access app on the following URL
+     http://localhost:3000/
