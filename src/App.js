@@ -10,7 +10,6 @@ const allowedExtensions = ["vnd.ms-excel"];
 
 const App = () => {
 	
-	const [csvData, setCsvData] = useState([]);
 	const [error, setError] = useState("");
 	const [file, setFile] = useState("");
 	const [data, setData] = useState();
@@ -24,23 +23,20 @@ const App = () => {
 		// Check if user has entered the file
 		if (e.target.files.length) {
 			const inputFile = e.target.files[0];
-			
-			// Check the file extensions, if it not
-			// included in the allowed extensions
-			// we show the error
+
 			const fileExtension = inputFile?.type.split("/")[1];
 
 			if (!allowedExtensions.includes(fileExtension)) {
-				setError("Please input a csv file");
+				setError("Please input a Comma Delimited CSV file");
                 setFile({})
 				return;
 			}
 
-			// If input type is correct set the state
 			setFile(inputFile);
 		}
 	};
-	const handleParse = () => {
+
+	const handleParse = (fileName) => {
         
 		if (!file) return setError("Enter a valid file");
 
@@ -49,12 +45,17 @@ const App = () => {
 		reader.onload = async ({ target }) => {
 			const csv = Papa.parse(target.result, { header: false });
 			const parsedData = csv?.data;
-            filterInformation(parsedData)
+            
+            if(!parsedData[0][2]) return setError("Number of Rows must be Atleast 1");
+
+            if( !parsedData.length <= 10000) return setError("Number of Rows must be less then 10000");
+
+            filterInformation(parsedData,fileName)
 		};
 		reader.readAsText(file);
 	};
 
-    const filterInformation = (columns) =>{
+    const filterInformation = (columns, fileName) =>{
         let total_orders = 0;
         let productsSale = []
         let productsWithBrands = []
@@ -103,26 +104,13 @@ const App = () => {
             }
             productsAvg.push(product)
         });
-        setCsvData(productsAvg);
 
-        const link = document.createElement('a');
-
-        let csv = convertArrayOfObjectsToCSV(productsAvg);
-
-        const filename = `0_${file.name}`;
-
-        if (!csv.match(/^data:text\/csv/i)) {
-            csv = `data:text/csv;charset=utf-8,${csv}`;
-        }
-
-        link.setAttribute('href', encodeURI(csv));
-        link.setAttribute('download', filename);
-        link.click();
-
+        const filename = `0_${fileName}`;
+        generateCSV(productsAvg,filename );
         let productWithPopularBrand = []
 
         productsWithBrands.forEach( element => {
-            // productWithPopularBrand
+            
             const index2 = productWithPopularBrand.findIndex(object => {
                 return  object.name === element.name;
             });
@@ -136,26 +124,15 @@ const App = () => {
             }
 
         });
-
-        const link2 = document.createElement('a');
-
-        let csv2 = convertArrayOfObjectsToCSV(productWithPopularBrand);
-
-        const filename2 = `1_${file.name}`;
-
-        if (!csv2.match(/^data:text\/csv/i)) {
-            csv2 = `data:text/csv;charset=utf-8,${csv2}`;
-        }
-
-        link2.setAttribute('href', encodeURI(csv2));
-        link2.setAttribute('download', filename2);
-        link2.click();
+        
+        const filename2 = `1_${fileName}`;
+        generateCSV(productWithPopularBrand,filename2 );
 
     }
 
-    function convertArrayOfObjectsToCSV(array) {
+    const convertArrayOfObjectsToCSV = (array) => {
         let result;
-    
+        alert(JSON.stringify(array))
         const columnDelimiter = ',';
         const lineDelimiter = '\n';
     
@@ -176,6 +153,23 @@ const App = () => {
         });
     
         return result;
+    }
+
+
+    const generateCSV = (data, name) => {
+        const link = document.createElement('a');
+
+        let csv = convertArrayOfObjectsToCSV(data);
+
+        const filename = name;
+
+        if (!csv.match(/^data:text\/csv/i)) {
+            csv = `data:text/csv;charset=utf-8,${csv}`;
+        }
+
+        link.setAttribute('href', encodeURI(csv));
+        link.setAttribute('download', filename);
+        link.click();
     }
 
 
@@ -208,8 +202,7 @@ const App = () => {
                 
                 <div className="generateDivCss">
                     {error ? error : file.name && 
-                    // <CSVLink className={btnClass} data={csvData}>Generaate CSV files</CSVLink>
-                    <Button variant="contained" color="primary" component="label" onClick={handleParse} >
+                    <Button variant="contained" color="primary" component="label" onClick={() => handleParse(file.name)} >
                         Generate Files
                     </Button>
                     }
