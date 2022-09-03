@@ -1,14 +1,10 @@
 pipeline {
-    agent
-    {
-        docker {
-            image 'node:14'
-            args '-p 3000:3000'
-        }
+    agent {
+        docker { image 'node:14.17.0-alpine' }
     }
-     environment {
-            CI = 'true'
-        }
+    // environment {
+    //     CI = 'true'
+    // }
     stages {
         stage('Build') {
             steps {
