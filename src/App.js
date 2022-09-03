@@ -1,12 +1,63 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createContext, useCallback } from "react";
 import Papa from "papaparse";
 import { CSVLink } from "react-csv";
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
-import './App.css'
+import '@testing-library/jest-dom';
+import './App.css';
+import Child1 from "./components/Child1";
+import { Child2 } from "./components/Child2";
+
 
 const allowedExtensions = ["vnd.ms-excel"];
+
+export const UserContext = createContext();
+
+const App3 = () => {
+
+    const [first, setfirst] = useState(0);
+    const [users, setusers] = useState([
+        {
+            name: "ali",
+            fname:"murtaza"
+        },
+        {
+            name: "ali",
+            fname:"murtaza"
+        },
+        {
+            name: "ali",
+            fname:"murtaza"
+        },
+        {
+            name: "ali",
+            fname:"murtaza"
+        }
+    ]);
+
+    useEffect(() => {
+        console.log("app called") 
+       })
+    
+    const addUser = useCallback(() => {
+
+    setusers((t) => [...users, {
+        name: "ali",
+        fname:"murtaza"
+    }]);
+    }, [users]);
+
+    return (
+        <UserContext.Provider value={users}>
+                main component
+                i am {first}
+                <button onClick={() => setfirst(first+1)}>change 1st</button>
+            <Child1 users={users} addUser={addUser} />
+            <Child2 users={users} />
+        </UserContext.Provider>
+    )
+}
 
 const App = () => {
 	
@@ -14,8 +65,6 @@ const App = () => {
 	const [file, setFile] = useState("");
 	const [data, setData] = useState();
     const btnClass= "MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary";
-
-   
 
 	const handleFileChange = (e) => {
 		setError("");
@@ -31,7 +80,6 @@ const App = () => {
                 setFile({})
 				return;
 			}
-
 			setFile(inputFile);
 		}
 	};
@@ -46,9 +94,9 @@ const App = () => {
 			const csv = Papa.parse(target.result, { header: false });
 			const parsedData = csv?.data;
             
-            if(!parsedData[0][2]) return setError("Number of Rows must be Atleast 1");
+            if(!parsedData[0][2]) return setError("Number of rows must be atleast 1");
 
-            if( !parsedData.length <= 10000) return setError("Number of Rows must be less then 10000");
+            if( !10000 > parsedData.length) return setError("Number of rows must be less then 10000");
 
             filterInformation(parsedData,fileName)
 		};
@@ -122,22 +170,17 @@ const App = () => {
             } else {
                 productWithPopularBrand.push(element);
             }
-
         });
         
         const filename2 = `1_${fileName}`;
-        generateCSV(productWithPopularBrand,filename2 );
-
+        generateCSV(productWithPopularBrand,filename2);
     }
 
     const convertArrayOfObjectsToCSV = (array) => {
         let result;
-        alert(JSON.stringify(array))
         const columnDelimiter = ',';
         const lineDelimiter = '\n';
-    
         const keys = Object.keys(array[0]);
-    
         result = '';
     
         array.forEach(item => {
@@ -146,33 +189,25 @@ const App = () => {
                 if (ctr > 0) result += columnDelimiter;
     
                 result += item[key];
-    
                 ctr++;
             });
             result += lineDelimiter;
         });
-    
         return result;
     }
 
-
     const generateCSV = (data, name) => {
         const link = document.createElement('a');
-
         let csv = convertArrayOfObjectsToCSV(data);
-
         const filename = name;
-
         if (!csv.match(/^data:text\/csv/i)) {
             csv = `data:text/csv;charset=utf-8,${csv}`;
         }
-
         link.setAttribute('href', encodeURI(csv));
         link.setAttribute('download', filename);
         link.click();
     }
-
-
+    
 	return (
 		<div>
             <CssBaseline />
@@ -211,5 +246,6 @@ const App = () => {
 		</div>
 	);
 };
+
 
 export default App;
