@@ -15,7 +15,9 @@ pipeline {
             }
         }
         stage('Test') {
-            ech0 "this is test phase"
+            steps{
+                ech0 "this is test phase"
+            }
         }
         // stage('Deliver') {
         //     steps {
