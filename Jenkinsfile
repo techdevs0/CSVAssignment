@@ -1,6 +1,6 @@
 pipeline {
-    // agent { any { image 'node:14.17.0' args '-p 3000:3000' } }
-    agent { dockerfile true }
+    agent { any { image 'node:14.17.0' args '-p 3000:3000' } }
+    // agent { dockerfile true }
 
 
     // environment {
