@@ -1,5 +1,5 @@
 pipeline {
-    agent { docker { image 'node:14-alpine' args '-p 3000:3000' } }
+    agent any
     // agent { dockerfile true }
     // tools {nodejs "nodejs"}
 
@@ -9,6 +9,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                docker { image 'node:14-alpine' args '-p 3000:3000' }
                 sh 'npm install'
                 sh 'npm start'
             }
