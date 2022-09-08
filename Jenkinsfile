@@ -1,6 +1,6 @@
 pipeline {
-    agent any
-    // agent { dockerfile true }
+    agent { dockerfile true }
+    // agent docker { filename 'Dockerfile'}
     // tools {nodejs "nodejs"}
 
     environment {
@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                docker { filename 'Dockerfile'}
+                
                 // sh 'npm install'
                 // sh 'npm start'
             }
