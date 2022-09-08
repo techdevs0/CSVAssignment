@@ -1,5 +1,5 @@
 pipeline {
-    agent { docker { image 'node:14.17.0' args '-p 3000:3000' } }
+    agent { docker { image 'node:14-alpine' args '-p 3000:3000' } }
     // agent { dockerfile true }
     // tools {nodejs "nodejs"}
 
