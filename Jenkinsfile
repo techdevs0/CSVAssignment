@@ -1,7 +1,10 @@
 pipeline {
-    agent any
-    // agent { dockerfile true }
-    // tools {nodejs "nodejs"}
+    agent {
+        docker {
+            image 'node:lts-bullseye-slim' 
+            args '-p 3000:3000' 
+        }
+    }
 
     environment {
         CI = 'true'
@@ -9,7 +12,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                agent { docker { image 'node:14-alpine' args '-p 3000:3000' } }
+                // agent { docker { image 'node:14-alpine' args '-p 3000:3000' } }
                 sh 'npm install'
                 sh 'npm start'
             }
