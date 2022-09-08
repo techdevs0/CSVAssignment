@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                agent { docker { filename 'Dockerfile'} }
+                agent { docker { image 'node 14-alpine'} }
                 // sh 'npm install'
                 // sh 'npm start'
             }
